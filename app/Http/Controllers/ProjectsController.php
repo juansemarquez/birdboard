@@ -21,4 +21,10 @@ class ProjectsController extends Controller
         Project::create($attributes);
         return redirect('/projects');
     }
+
+    public function show(Project $project)
+    {
+        //$project = Project::where('id',$id)->firstOrFail();
+        return view('projects.show',compact('project'));
+    }
 }
