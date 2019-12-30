@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Project;
+use Illuminate\Support\Facades\Auth;
 class ProjectsController extends Controller
 {
     public function index()
@@ -18,7 +19,9 @@ class ProjectsController extends Controller
             'title'=>'required', 
             'description'=>'required'
         ]);
-        Project::create($attributes);
+        //$attributes['owner_id'] = Auth::id();
+        //Project::create($attributes);
+        Auth::user()->projects()->create($attributes);
         return redirect('/projects');
     }
 
