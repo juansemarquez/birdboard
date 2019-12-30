@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectsTest extends TestCase
 {
@@ -36,11 +37,11 @@ class ProjectsTest extends TestCase
         $this->get('/projects')->assertSee($attributes['title']);
     }
 
-    public function test_a_user_can_view_a_project()
+    public function test_a_user_can_view_her_project()
     {
-        $this->withoutExceptionHandling();
+        //$this->withoutExceptionHandling();
         $this->actingAs(factory('App\User')->create());
-        $project = factory('App\Project')->create();
+        $project = factory('App\Project')->create(['owner_id' => Auth::id()]);
         $this->get($project->path())
             ->assertSee($project->title)
             ->assertSee($project->description);
@@ -60,7 +61,7 @@ class ProjectsTest extends TestCase
         $this->post('/projects',$attributes)->assertSessionHasErrors('description');
     }
         
-    public function only_authenticated_user_can_create_project()
+    public function test_guests_may_not_create_project()
     {
         //$this->withoutExceptionHandling();
         //$attributes = factory('App\Project')->raw(['owner_id' => null]);
@@ -69,4 +70,21 @@ class ProjectsTest extends TestCase
         $this->post('/projects',$attributes)->assertRedirect('login');
     }
     
+    public function test_guests_may_not_view_projects()
+    {
+        $this->get('/projects')->assertRedirect('login');
+    }
+    
+    public function test_guests_may_not_view_a_project()
+    {
+        $this->get('/projects')->assertRedirect('login');
+    }
+
+    public function test_an_authenticated_user_cannot_view_the_projects_of_others()
+    {
+        //$this->withoutExceptionHandling();
+        $this->actingAs(factory('App\User')->create());
+        $project = factory('App\Project')->create();
+        $this->get($project->path())->assertStatus(403);
+    }
 }
