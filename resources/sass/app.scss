@@ -7,6 +7,11 @@
 // Bootstrap
 //@import '~bootstrap/scss/bootstrap';
 
+.button {
+    @apply .bg-blue .text-white .no-underline .rounded-lg .py-2 .px-5;
+    box-shadow: 0 2px 7px 0 #b8eaff;
+}
+
 @tailwind base;
 
 @tailwind components;
