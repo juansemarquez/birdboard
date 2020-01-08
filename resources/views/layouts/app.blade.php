@@ -19,10 +19,11 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
-<body>
+<body class="bg-grey-light">
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
+        <nav class="bg-white">
+            <div class="container mx-auto">
+            <div class="flex justify-between items-center py-4">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
                 </a>
@@ -69,10 +70,11 @@
                         @endguest
                     </ul>
                 </div>
+                </div>
             </div>
         </nav>
 
-        <main class="container py-4">
+        <main class="container mx-auto py-4">
             @yield('content')
         </main>
     </div>
