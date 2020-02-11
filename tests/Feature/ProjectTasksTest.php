@@ -30,7 +30,21 @@ class ProjectTasksTest extends TestCase
     }
 
 
-        
+    public function test_only_the_owner_of_a_project_may_update_a_task()
+    {
+        $this->signIn();
+        $project = factory(Project::class)->create();
+        $task = $project->addTask("Tarea ajena");
+        $this->patch($task->path(), [
+                         'body' => 'Contenido ajeno cambiado',
+                         'completed' => true
+                     ]        
+                 )->assertStatus(403);
+        $this->assertDatabaseMissing('tasks', 
+            [ 'body' => 'Contenido ajeno cambiado' ]);
+    }
+
+
 
 
     public function test_a_project_can_have_tasks()
@@ -45,6 +59,31 @@ class ProjectTasksTest extends TestCase
         $this->get($project->path())->assertSee('Probando tareas');
 
     }
+
+    public function test_a_task_can_be_updated()
+    {
+        $this->withoutExceptionHandling();
+        $this->signIn();
+        $p = factory(Project::class)->raw();
+        $project = \Auth::user()->projects()->create($p);
+
+        $task = $project->addTask('Contenido de la tarea');
+
+        $this->patch($task->path(), [
+                         'body' => 'Contenido cambiado',
+                         'completed' => true
+                     ]        
+                 );
+        $this->assertDatabaseHas('tasks', [
+            'id' => $task->id,
+            'body' => 'Contenido cambiado',
+            'completed' => true
+        ]);
+    }
+
+
+
+
 
     public function test_a_task_requires_a_body()
     {
